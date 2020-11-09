@@ -1,39 +1,44 @@
 package example
 
-import com.amazonaws.services.ec2.AmazonEC2ClientBuilder
-import com.amazonaws.services.identitymanagement.AmazonIdentityManagement
 import io.circe._
+import scala.io.Source
+
+// TODO: https://gist.github.com/katebee/be5635bb5426f569b16cccc5a87386ae
 
 object OptedInRegion {
   def main(args: Array[String]): Unit = {
-    // get the file name from the parameter
-    val listOfAccounts = args.head
-    // loop through the list of accounts in the file
-    val eachAccount = getAccounts(listOfAccounts)
-    // create AWS client for each account (I wonder if this function should return a map of account -> client?)
-    val accountWithClient = createClient(eachAccount)
-    // pass each account to the describe regions function
-    val optedInRegions = discoverOptInRegions(accountWithClient)
-    // convert the result into Json
-    val jsonResponse = resultToJson(optedInRegions)
-    // print to the command line
-    println(jsonResponse)
+    args.toList match {
+      case Nil => {
+        println("error - missing argument <output file>")
+        sys.exit(1)
+      }
+      case inputFile :: _ => {
+        // get the file name from the parameter
+        val listOfAccounts = inputFile
+        // loop through the list of accounts in the file
+        val parsedListOfAccounts = getAccounts(listOfAccounts)
+        // this function takes an account and returns a client
+        val optedInRegions = discoverOptInRegions(parsedListOfAccounts)
+        // convert the result into Json
+        val jsonResponse = resultToJson(optedInRegions)
+        // print to the command line
+        println(jsonResponse)
+      }
+    }
   }
 
-  // take in a file name
-  // loop through the list in the file (separated by new lines?)
-  // produce a list of strings
-  def getAccounts(file: String): List[String] = ???
+  def getAccounts(file: String): List[String] = {
+    val bufferedSource = Source.fromFile(file)
+    val result = bufferedSource.mkString.split(",").toList
+    bufferedSource.close
+    result
+  }
 
-  // take in a list of account names
-  // map through each of them to get the account's client
-  // return a Map of account to client
-  def createClient(accounts: List[String]): Map[String, AmazonIdentityManagement] = ???
-
-  // take in a Map of account to client
-  // run the describe regions function on each account with it's own client, checking for opted-in regions
+  // map through each account in the list
+  // run the describe regions function on each account
+  // get the client for each account from the Clients.createClient function
   // return a Map of account to list of opted in regions
-  def discoverOptInRegions(accountWithClient: Map[String, AmazonIdentityManagement]): Map[String, List[String]] = ???
+  def discoverOptInRegions(accounts: List[String]): Map[String, List[String]] = ???
 
   // take the Map of account to list of opted in regions and return Json
   // what should this Json look like?
