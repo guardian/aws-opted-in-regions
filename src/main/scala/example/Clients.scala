@@ -3,7 +3,7 @@ package example
 import com.amazonaws.auth.AWSCredentialsProviderChain
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
 import com.amazonaws.regions.Regions
-import com.amazonaws.services.ec2.AmazonEC2ClientBuilder
+import com.amazonaws.services.ec2.{AmazonEC2AsyncClientBuilder}
 
 
 // TODO: https://github.com/guardian/security-hq/blob/dde136c9c461b641df9aa9efaf956c03ed2b5c90/hq/app/aws/AWS.scala#L22
@@ -17,7 +17,7 @@ object Clients {
   }
 
   def createClient(account: String) = {
-    AmazonEC2ClientBuilder.standard()
+    AmazonEC2AsyncClientBuilder.standard()
       .withCredentials(credentialsProviderChain(account))
       .withRegion(defaultRegion)
       .build()
