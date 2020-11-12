@@ -15,17 +15,17 @@ object OptedInRegion {
         println("error - missing argument <output file>")
         sys.exit(1)
       }
-      case inputFile :: _ => {
+      case accounts :: _ => {
         // get the file name from the parameter
-        val listOfAccounts = inputFile
+        val listOfAccounts: List[String] = accounts.split(",").toList
         // loop through the list of accounts in the file
-        val parsedListOfAccounts = getAccounts(listOfAccounts)
+        // val parsedListOfAccounts = getAccounts(listOfAccounts)
         // run the describe regions API on each account
-        val optedInRegions = discoverAllOptInRegions(parsedListOfAccounts)
+        val optedInRegions = discoverAllOptInRegions(listOfAccounts)
         // convert the result into Json
-        val jsonResponse = resultToJson(optedInRegions)
+        // val jsonResponse = resultToJson(optedInRegions)
         // print to the command line
-        println(jsonResponse)
+        println(optedInRegions)
       }
     }
   }
