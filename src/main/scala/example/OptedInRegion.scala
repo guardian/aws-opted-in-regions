@@ -5,6 +5,7 @@ import io.circe._
 
 import scala.io.Source
 import scala.jdk.CollectionConverters.CollectionHasAsScala
+import scala.util.control.NonFatal
 
 // TODO: https://gist.github.com/katebee/be5635bb5426f569b16cccc5a87386ae
 
@@ -39,24 +40,35 @@ object OptedInRegion {
 
   // TODO: https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/ec2/model/Filter.html#Filter--
   // TODO: https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html
-  def discoverOptInRegions(account: String): List[String] = {
+  def discoverOptInRegions(account: String): Either[String, List[String]] = {
     val ec2Client = Clients.createClient(account)
     try {
         val request = new DescribeRegionsRequest()
           .withAllRegions(true)
           .withFilters(new Filter("opt-in-status").withValues("opted-in"))
-        ec2Client.describeRegions(request).getRegions.asScala.toList.map(_.getRegionName)
+        Right(ec2Client.describeRegions(request).getRegions.asScala.toList.map(_.getRegionName))
+      } catch {
+      case NonFatal(error) => {
+        println(s"${error.getMessage}")
+        Left(error.getMessage)
       }
-      finally {
+    } finally {
         ec2Client.shutdown()
       }
   }
 
-  def discoverAllOptInRegions(accounts: List[String]): Map[String, List[String]] = {
+  def discoverAllOptInRegions(accounts: List[String]): Map[String, Either[String, List[String]]] = {
     accounts.map(account => account -> discoverOptInRegions(account)).toMap
   }
 
-  def resultToJson(result: Map[String, List[String]]): Json = {
+  def split(map: Map[String, Either[String, List[String]]]): (Map[String, List[String]], Map[String, List[String]]) = ???
+
+  // new method
+  // split map into two (pattern match)
+  // successes to json
+  // print failures
+
+  def toJson(result: Map[String, List[String]]): Json = {
     ???
   }
 }
