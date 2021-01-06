@@ -1,7 +1,7 @@
 package example
 
 object Model {
-  case class Account(profileName: String, optedInRegions: List[String], status: String, message: Option[String])
+  case class Account(name: String, optedInRegions: List[String], status: String, message: Option[String])
 
   case class Arguments(listOfAccounts: Option[String], file: Option[String])
 
@@ -17,5 +17,7 @@ object Model {
 
   case class AccountName(name: String)
 
-  case class AccountWithOptedInRegions(account: Map[AccountName, Either[String, OptInRegions]])
+  case class Error(message: Option[String])
+
+  case class AccountWithOptedInRegions(account: Map[AccountName, Either[Error, OptInRegions]])
 }

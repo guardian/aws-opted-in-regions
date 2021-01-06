@@ -1,6 +1,6 @@
 package example
 
-object StartHere {
+object Main {
   def main(args: Array[String]): Unit = {
     ArgumentParser.argParser.parse(args, Model.Arguments.empty()) match {
       case Some(Model.Arguments(accountsOpt, fileOpt)) => {
@@ -14,7 +14,7 @@ object StartHere {
           println(optedInRegions)
         } else if (fileOpt.nonEmpty) {
           // loop through the list of accounts in the file
-          val parsedFile = Account.getAccountsFromFile(fileOpt.get)
+          val parsedFile = ParseFile.getAccountsFromFile(fileOpt.get)
           // run the describe regions API on each account
           val optedInRegions = DiscoverOptInRegion.discoverAllOptInRegions(parsedFile)
           // print to the command line

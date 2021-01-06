@@ -12,7 +12,7 @@ object ArgumentParser {
     opt[String]("file").optional()
       .action { (file, args) =>
         args.copy(file = Some(file))
-      } text "This list of accounts in the given file will be run through the aws-opt-in script"
+      } text "The list of accounts in the given file will be run through the aws-opt-in script"
     checkConfig { args =>
       (args.listOfAccounts.isEmpty, args.file.isEmpty) match {
         case (true, true) =>
